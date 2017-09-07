@@ -2,47 +2,51 @@ var path = require('path')
 var webpack = require('webpack')
 var merge = require('webpack-merge')
 var HtmlWebpackPlugin = require('html-webpack-plugin')
-var autoprefixer = require('autoprefixer')
 var ExtractTextPlugin = require('extract-text-webpack-plugin')
 
 var TARGET_ENV = process.env.npm_lifecycle_event === 'build' ? 'production' : 'development'
 
 // common Webpack config settings
 var commonConfig = {
-  resolve: {
-    extensions: [ '', '.js' ]
-  },
-
   output: {
     path: path.resolve(__dirname, 'public/'),
     filename: '[hash].min.js'
   },
 
   module: {
-    loaders: [
+    rules: [
       {
         test: /\.js$/,
-        loaders: [ 'react-hot', 'babel' ],
+        use: [
+          { loader: 'react-hot-loader' },
+          { loader: 'babel-loader' }
+        ],
         include: path.resolve(__dirname, 'src')
-      },
-      {
-        test: /\.json?$/,
-        exclude: /node_modules/,
-        loader: 'json'
       },
       {
         test: /\.(png|jpg|jpeg)$/,
         exclude: /node_modules/,
-        loader: 'url-loader?limit=8192&name=./img/[hash].[ext]'    // inline if under 8k
+        use: [
+          {
+            loader: 'url-loader',
+            options: { limit: 8192, name: './img/[hash].[ext]' } // inline if under 8k
+          }
+        ]
       },
       {
         test: /\.(woff|woff2|eot|ttf)$/,
         exclude: /node_modules/,
-        loader: 'url-loader?limit=2048&name=./fonts/[hash].[ext]'  // inline if under 2k
+        use: [
+          { loader: 'url-loader',
+            options: { limit: 2048, name: './fonts/[hash].[ext]' } // inline if under 2k
+          }
+        ]
       },
       {
         test: /\.svg$/,
-        loader: 'babel!svg-react'
+        use: [
+          { loader: 'babel!svg-react' }
+        ]
       }
     ]
   },
@@ -53,9 +57,7 @@ var commonConfig = {
       inject: 'body',
       filename: 'index.html'
     })
-  ],
-
-  postcss: [ autoprefixer({ browsers: ['last 2 versions'] }) ]
+  ]
 }
 
 // additional Webpack settings when running locally ('npm start')
@@ -65,14 +67,14 @@ if (TARGET_ENV === 'development') {
   module.exports = merge(commonConfig, {
 
     // source maps (better than 'eval' but slower)
-    devtool: 'eval-source-map',
+    devtool: 'inline-source-map',
 
     // dev server settings
     devServer: {
       historyApiFallback: true,
       hot: true,
-      inline: true,
-      progress: true
+      inline: true
+      // progress: true
     },
 
     // dev server with hot-loader
@@ -83,15 +85,15 @@ if (TARGET_ENV === 'development') {
     ],
 
     module: {
-      loaders: [
+      rules: [
         {
           // compile & auto-prefix CSS
           test: /\.(css|scss)$/,
-          loaders: [
-            'style-loader',
-            'css-loader',
-            'postcss-loader',
-            'sass-loader'
+          use: [
+            { loader: 'style-loader' },
+            { loader: 'css-loader' },
+            { loader: 'postcss-loader' },
+            { loader: 'sass-loader' }
           ]
         }
       ]
@@ -114,15 +116,14 @@ if (TARGET_ENV === 'production') {
     ],
 
     module: {
-      loaders: [
+      rules: [
         {
           // create and save out a CSS bundle (using ExtractTextPlugin)
           test: /\.(css|scss)$/,
-          loader: ExtractTextPlugin.extract('style-loader', [
-            'css-loader',
-            'postcss-loader',
-            'sass-loader'
-          ])
+          use: ExtractTextPlugin.extract({
+            fallback: 'style-loader',
+            use: [ 'css-loader', 'postcss-loader', 'sass-loader' ]
+          })
         }
       ]
     },
@@ -134,8 +135,7 @@ if (TARGET_ENV === 'production') {
       }),
 
       // optimizations
-      new webpack.optimize.DedupePlugin(),
-      new webpack.optimize.OccurenceOrderPlugin(),
+      new webpack.optimize.OccurrenceOrderPlugin(),
 
       // save out CSS bundle (backtrack out of scripts/ to save into css/)
       new ExtractTextPlugin('css/[hash].min.css', { allChunks: true }),

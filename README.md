@@ -96,6 +96,11 @@ What if you don't want the animation applied to *ALL* paths inside your SVG? Add
 
 
 ### Changelog
+**Ver 0.8.0**
+* Update dependencies
+* Migrate to Webpack 3
+* Use prop-types package
+
 **Ver 0.7.3**
 * No-op server-side
 * Do not budle/minify distribution package

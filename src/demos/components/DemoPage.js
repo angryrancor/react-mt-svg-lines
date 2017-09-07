@@ -212,7 +212,7 @@ const styles = {
   },
   row: {
     borderTop: '1px solid #888',
-    width: '100%',   // for IE
+    width: '100%', // for IE
     paddingTop: 20
   },
   ieMessage: {

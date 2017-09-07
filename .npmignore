@@ -2,5 +2,4 @@ src/
 public/
 test/
 webpack.config.js
-webpack.dist.js
 showcase.gif

@@ -10,21 +10,21 @@ const EASING = {
   'ease-out': TWEEN.Easing.Cubic.Out,
   'ease-in-out': TWEEN.Easing.Cubic.InOut,
   'linear': TWEEN.Easing.Linear.None,
-  'step-start': TWEEN.Easing.Bounce.In,     // not quite the same thing ;)
-  'step-end': TWEEN.Easing.Bounce.Out       // not quite the same thing ;)
+  'step-start': TWEEN.Easing.Bounce.In, // not quite the same thing ;)
+  'step-end': TWEEN.Easing.Bounce.Out // not quite the same thing ;)
 }
 
 export default class MtSvgLines extends React.Component {
   static propTypes = {
-    className: PropTypes.string,            // custom CSS class (applied to svg elem)
-    animate: PropTypes.oneOfType([          // external animation trigger
-      PropTypes.string,                     // - pass a unique string or true to (re)start animation
-      PropTypes.number,                     // - pass a number to specify delay before the animation begins (ms)
-      PropTypes.bool                        // - pass false (or omit) to draw static SVG (no animation)
+    className: PropTypes.string, // custom CSS class (applied to svg elem)
+    animate: PropTypes.oneOfType([ // external animation trigger
+      PropTypes.string, // - pass a unique string or true to (re)start animation
+      PropTypes.number, // - pass a number to specify delay before the animation begins (ms)
+      PropTypes.bool // - pass false (or omit) to draw static SVG (no animation)
     ]),
-    duration: PropTypes.number,             // total anim duration (ms)
-    stagger: PropTypes.number,              // delay between start times of each path (percentage)
-    timing: React.PropTypes.oneOf([         // easing type
+    duration: PropTypes.number, // total anim duration (ms)
+    stagger: PropTypes.number, // delay between start times of each path (percentage)
+    timing: React.PropTypes.oneOf([ // easing type
       'ease',
       'ease-in',
       'ease-out',
@@ -33,10 +33,10 @@ export default class MtSvgLines extends React.Component {
       'step-start',
       'step-end'
     ]),
-    playback: PropTypes.string,             // iteration-count || direction || fill-mode (perhaps even play-state)
-    fade: PropTypes.bool,                   // apply a fade-in to each path
-    callback: PropTypes.func,               // callback fn to run when when anim completes
-    jsOnly: PropTypes.bool,                 // apply JS animation, regardless of browser
+    playback: PropTypes.string, // iteration-count || direction || fill-mode (perhaps even play-state)
+    fade: PropTypes.bool, // apply a fade-in to each path
+    callback: PropTypes.func, // callback fn to run when when anim completes
+    jsOnly: PropTypes.bool, // apply JS animation, regardless of browser
     children: PropTypes.node
   };
 
@@ -57,16 +57,16 @@ export default class MtSvgLines extends React.Component {
     super(props)
 
     this.state = {
-      classKey: `mt-${shortUID()}`,         // unique class name for the wrapper, an internal "trigger" (re-gen each time anim is to run)
-      css: '',                              // generated CSS
-      tweenElapsed: 0,                      // tween duration so far (ms)
-      tweenProgress: 0                      // tween completion (pct)
+      classKey: `mt-${shortUID()}`, // unique class name for the wrapper, an internal "trigger" (re-gen each time anim is to run)
+      css: '', // generated CSS
+      tweenElapsed: 0, // tween duration so far (ms)
+      tweenProgress: 0 // tween completion (pct)
     }
 
     this._lastAnimate = ''
     this._lastClassKey = ''
 
-    this._animStart = 0                     // anim start timestamp
+    this._animStart = 0 // anim start timestamp
 
     this._pathElems = []
     this._pathDataFrom = {}
@@ -135,7 +135,7 @@ export default class MtSvgLines extends React.Component {
       this._lastClassKey = classKey
 
       // parse out vars common for both modes
-      const startDelay = typeof animate === 'number' ? animate : 0   // if numeric, treat as delay (ms)
+      const startDelay = typeof animate === 'number' ? animate : 0 // if numeric, treat as delay (ms)
       let numOfRepeats = parseInt(playback, 10) || 0
 
       /* ----- JS MODE ----- */
@@ -185,7 +185,7 @@ export default class MtSvgLines extends React.Component {
         const pathQty = pathLenghts.length || 1
 
         // 2) calc all timing values
-        const staggerMult = clamp(stagger, 0, 100) / 100        // convert pct to 0-1
+        const staggerMult = clamp(stagger, 0, 100) / 100 // convert pct to 0-1
         const pathStaggerDelay = (stagger > 0 ? duration / pathQty * staggerMult : 0)
         const pathDrawDuration = (stagger > 0 ? duration - ((pathStaggerDelay * (pathQty - 1)) * (2 - staggerMult)) : duration)
 
@@ -222,7 +222,7 @@ export default class MtSvgLines extends React.Component {
    */
   _onTweenUpdate = () => {
     this._setStrokeDashoffset(this._pathElems, this._tweenData)
-    this._animate()  // go again..
+    this._animate() // go again..
   }
 
   /*
